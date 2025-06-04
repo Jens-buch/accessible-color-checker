@@ -3,30 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Accessible Color checker</title>
+  <title>Accessible Color Checker</title>
+
+  <!-- Pickr color picker styles -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css" />
+
+  <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+  <!-- Custom styles for border colors -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="bg-gray-100 text-gray-900 p-6">
   <div class="max-w-5xl mx-auto">
     <h1 class="text-3xl font-bold mb-6">Accessible Color Matrix</h1>
 
-    <div id="color-inputs" class="space-y-4 mb-6">
-      <!-- JavaScript will render Pickr + name fields here -->
+    <!-- Where color pickers get rendered -->
+    <div id="color-inputs" class="space-y-4 mb-6"></div>
+
+    <!-- Action buttons -->
+    <div class="flex gap-4 mb-6">
+      <button id="add-color" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+        Add Color
+      </button>
+      <button onclick="generateMatrix()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Generate Matrix
+      </button>
     </div>
 
-    <button onclick="generateMatrix()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Generate Matrix</button>
+    <!-- Matrix display -->
+    <div id="matrix" class="mt-8 overflow-x-auto"></div>
 
-    <div id="matrix" class="mt-8 overflow-x-auto"></div><button id="add-color" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 mb-4">Add Color</button></div>
-
+    <!-- Shareable link -->
     <div class="mt-6 p-4 bg-white rounded shadow">
       <strong>Shareable link:</strong>
       <a href="#" id="share-link" class="text-blue-600 break-all underline">(not generated yet)</a>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+  <!-- Scripts -->
   <script src="script.js"></script>
 </body>
 </html>

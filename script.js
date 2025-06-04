@@ -1,55 +1,39 @@
 const colorInputsContainer = document.getElementById('color-inputs');
-const pickrs = [];
+const colorRows = [];
 
 function createColorRow(name = '', hex = '#000000') {
   const wrapper = document.createElement('div');
   wrapper.className = 'flex items-center gap-4';
 
+  // Name input
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.placeholder = 'Color name';
   nameInput.value = name;
   nameInput.className = 'border px-2 py-1 rounded w-40';
 
-  const colorTarget = document.createElement('button');
-  colorTarget.className = 'w-10 h-10 border rounded';
+  // Native color input
+  const colorInput = document.createElement('input');
+  colorInput.type = 'color';
+  colorInput.value = hex;
+  colorInput.className = 'w-10 h-10 border rounded';
 
+  // Remove button
   const removeBtn = document.createElement('button');
   removeBtn.textContent = 'Remove';
   removeBtn.className = 'text-red-600 hover:underline';
   removeBtn.onclick = () => {
-    const index = pickrs.findIndex(p => p._nameInput === nameInput);
-    if (index !== -1) {
-      pickrs[index].destroyAndRemove();
-      pickrs.splice(index, 1);
-    }
+    const index = colorRows.findIndex(r => r.name === nameInput && r.color === colorInput);
+    if (index !== -1) colorRows.splice(index, 1);
     wrapper.remove();
   };
 
   wrapper.appendChild(nameInput);
-  wrapper.appendChild(colorTarget);
+  wrapper.appendChild(colorInput);
   wrapper.appendChild(removeBtn);
   colorInputsContainer.appendChild(wrapper);
 
-  const pickr = Pickr.create({
-    el: colorTarget,
-    theme: 'classic',
-    default: hex,
-    swatches: null,
-    components: {
-      preview: true,
-      opacity: false,
-      hue: true,
-      interaction: {
-        hex: true,
-        input: true,
-        save: false
-      }
-    }
-  });
-
-  pickr._nameInput = nameInput;
-  pickrs.push(pickr);
+  colorRows.push({ name: nameInput, color: colorInput });
 }
 
 function initDefaultColors() {
@@ -144,12 +128,12 @@ function generateMatrix() {
   const names = [];
   const values = [];
 
-  pickrs.forEach(pickr => {
-    const name = pickr._nameInput.value;
-    const color = pickr.getColor().toHEXA().toString();
-    if (name && color) {
+  colorRows.forEach(row => {
+    const name = row.name.value;
+    const hex = row.color.value;
+    if (name && hex) {
       names.push(name);
-      values.push(color);
+      values.push(hex);
     }
   });
 
