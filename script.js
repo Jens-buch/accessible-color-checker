@@ -2,61 +2,55 @@ const colorInputsContainer = document.getElementById('color-inputs');
 const colorRows = [];
 const paletteNameInput = document.getElementById('palette-name');
 
-function createColorRow(name = '', hex = '#000000') {
+function createColorRow(hex = '#000000') {
   const wrapper = document.createElement('div');
-  wrapper.className = 'flex items-center gap-4';
-
-  const nameInput = document.createElement('input');
-  nameInput.type = 'text';
-  nameInput.placeholder = 'Color name';
-  nameInput.value = name;
-  nameInput.className = 'border px-2 py-1 rounded w-40';
+  wrapper.className = 'flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-lg shadow-sm w-full max-w-[120px]';
 
   const colorInput = document.createElement('input');
   colorInput.type = 'color';
   colorInput.value = hex;
-  colorInput.className = 'w-10 h-10 border rounded';
+  colorInput.className = 'w-12 h-12 border rounded-full cursor-pointer';
 
-  const hexLabel = document.createElement('span');
-  hexLabel.className = 'text-sm text-gray-600';
-  hexLabel.textContent = hex.toUpperCase();
-
-  colorInput.addEventListener('input', () => {
-    hexLabel.textContent = colorInput.value.toUpperCase();
-  });
+  const hexInput = document.createElement('input');
+  hexInput.type = 'text';
+  hexInput.value = hex.toUpperCase();
+  hexInput.className = 'border px-2 py-1 rounded text-sm text-gray-700 text-center w-full';
 
   const removeBtn = document.createElement('button');
   removeBtn.textContent = 'Remove';
-  removeBtn.className = 'text-red-600 hover:underline';
+  removeBtn.className = 'text-red-600 text-xs hover:underline mt-1';
   removeBtn.onclick = () => {
-    const index = colorRows.findIndex(r => r.name === nameInput && r.color === colorInput);
+    const index = colorRows.findIndex(r => r.color === colorInput);
     if (index !== -1) colorRows.splice(index, 1);
     wrapper.remove();
   };
 
-  wrapper.appendChild(nameInput);
+  colorInput.addEventListener('input', () => {
+    hexInput.value = colorInput.value.toUpperCase();
+  });
+
+  hexInput.addEventListener('input', () => {
+    const val = hexInput.value;
+    if (/^#([0-9A-F]{3}){1,2}$/i.test(val)) {
+      colorInput.value = val;
+    }
+  });
+
   wrapper.appendChild(colorInput);
-  wrapper.appendChild(hexLabel);
+  wrapper.appendChild(hexInput);
   wrapper.appendChild(removeBtn);
   colorInputsContainer.appendChild(wrapper);
 
-  colorRows.push({ name: nameInput, color: colorInput });
+  colorRows.push({ color: colorInput });
 }
 
 function initDefaultColors() {
-  const defaults = [
-    { name: 'White', value: '#FFFFFF' },
-    { name: 'Color 2', value: '#FEDC2A' },
-    { name: 'Color 3', value: '#5A3B5D' },
-    { name: 'Color 4', value: '#8B538F' },
-    { name: 'Color 5', value: '#C3A3C9' }
-  ];
-  defaults.forEach(c => createColorRow(c.name, c.value));
+  const defaults = ['#FFFFFF', '#FEDC2A', '#5A3B5D', '#8B538F', '#C3A3C9'];
+  defaults.forEach(hex => createColorRow(hex));
 }
 
 function loadFromURL() {
   const params = new URLSearchParams(window.location.search);
-  const names = params.getAll('n');
   const values = params.getAll('v');
   const title = params.get('title');
 
@@ -64,13 +58,10 @@ function loadFromURL() {
     paletteNameInput.value = decodeURIComponent(title);
   }
 
-  if (names.length > 0 && names.length === values.length) {
-    names.forEach((name, i) => {
-      createColorRow(name, `#${values[i]}`);
-    });
+  if (values.length > 0) {
+    values.forEach(hex => createColorRow(`#${hex}`));
     return true;
   }
-
   return false;
 }
 
@@ -94,7 +85,7 @@ function getRating(ratio) {
   return 'Fail';
 }
 
-function buildMatrix(names, values) {
+function buildMatrix(values) {
   const table = document.createElement('table');
   table.className = 'table-auto border-collapse w-full';
 
@@ -105,20 +96,19 @@ function buildMatrix(names, values) {
   emptyTh.className = 'p-2';
   headerRow.appendChild(emptyTh);
 
-  names.forEach((name, i) => {
+  values.forEach(hex => {
     const th = document.createElement('th');
-    th.className = 'p-2 border bg-gray-200';
-
+    th.className = 'p-2 border bg-gray-100';
     const label = document.createElement('div');
     label.className = 'flex flex-col items-center gap-1';
 
     const swatch = document.createElement('div');
     swatch.className = 'w-4 h-4 rounded-full';
-    swatch.style.backgroundColor = values[i];
+    swatch.style.backgroundColor = hex;
 
     const text = document.createElement('div');
-    text.className = 'text-sm text-gray-800';
-    text.innerHTML = `<div>${name}</div><div class="text-xs text-gray-500">${values[i].toUpperCase()}</div>`;
+    text.className = 'text-xs text-gray-700';
+    text.textContent = hex.toUpperCase();
 
     label.appendChild(swatch);
     label.appendChild(text);
@@ -131,12 +121,11 @@ function buildMatrix(names, values) {
 
   const tbody = document.createElement('tbody');
 
-  values.forEach((bgValue, rowIdx) => {
+  values.forEach((bgValue) => {
     const tr = document.createElement('tr');
 
     const rowHeader = document.createElement('th');
-    rowHeader.className = 'p-2 border bg-gray-200';
-
+    rowHeader.className = 'p-2 border bg-gray-100';
     const label = document.createElement('div');
     label.className = 'flex flex-col items-start gap-1';
 
@@ -145,15 +134,15 @@ function buildMatrix(names, values) {
     swatch.style.backgroundColor = bgValue;
 
     const text = document.createElement('div');
-    text.className = 'text-sm text-gray-800';
-    text.innerHTML = `<div>${names[rowIdx]}</div><div class="text-xs text-gray-500">${bgValue.toUpperCase()}</div>`;
+    text.className = 'text-xs text-gray-700';
+    text.textContent = bgValue.toUpperCase();
 
     label.appendChild(swatch);
     label.appendChild(text);
     rowHeader.appendChild(label);
     tr.appendChild(rowHeader);
 
-    values.forEach((textValue, colIdx) => {
+    values.forEach((textValue) => {
       const ratio = contrast(bgValue, textValue);
       const rating = getRating(ratio);
 
@@ -192,26 +181,20 @@ function buildMatrix(names, values) {
   return table;
 }
 
-function createLink(names, values, title) {
+function createLink(values, title) {
   const params = new URLSearchParams();
   if (title) params.append('title', encodeURIComponent(title));
-  names.forEach(n => params.append('n', n));
   values.forEach(v => params.append('v', v.replace('#', '')));
   return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
 }
 
 function generateMatrix() {
-  const names = [];
   const values = [];
   const title = paletteNameInput?.value.trim();
 
   colorRows.forEach(row => {
-    const name = row.name.value;
     const hex = row.color.value;
-    if (name && hex) {
-      names.push(name);
-      values.push(hex);
-    }
+    if (hex) values.push(hex);
   });
 
   const container = document.getElementById('matrix');
@@ -224,10 +207,10 @@ function generateMatrix() {
     container.appendChild(h2);
   }
 
-  container.appendChild(buildMatrix(names, values));
+  container.appendChild(buildMatrix(values));
 
   const shareLink = document.getElementById('share-link');
-  shareLink.href = createLink(names, values, title);
+  shareLink.href = createLink(values, title);
   shareLink.textContent = shareLink.href;
 }
 

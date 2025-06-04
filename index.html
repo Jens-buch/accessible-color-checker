@@ -3,48 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Accessible Color Checker</title>
-
-  <!-- Tailwind CSS CDN -->
+  <title>Accessible Color Matrix</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 </head>
-<body class="bg-gray-100 text-gray-900 p-6">
-  <div class="max-w-5xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6">Accessible Color Matrix</h1>
-
-    <!-- Palette name -->
-    <input
-      id="palette-name"
-      type="text"
-      placeholder="Palette name (optional)"
-      class="border px-3 py-2 rounded w-full max-w-md mb-6"
-    />
-
-    <!-- Color input rows -->
-    <div id="color-inputs" class="space-y-4 mb-6"></div>
-
-    <!-- Action buttons -->
-    <div class="flex gap-4 mb-6">
-      <button id="add-color" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
-        Add Color
-      </button>
-<button id="generate-matrix" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-  Generate Matrix
-</button>
-
+<body class="bg-white text-gray-900 p-6">
+  <div class="max-w-6xl mx-auto">
+    <!-- Title and palette name -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-6">Accessible Color Matrix</h1>
+      <div class="flex justify-center">
+        <input id="palette-name" type="text" placeholder="Enter palette name..." required
+          class="w-full max-w-2xl py-4 px-6 text-lg rounded-full bg-gray-100 focus:outline-none placeholder-gray-500 text-center" />
+      </div>
     </div>
 
-    <!-- Contrast matrix -->
+    <!-- Color Inputs Grid -->
+    <div id="color-inputs" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-items-center mb-8 w-full">
+      <!-- Each item will follow: Color square -> HEX -->
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex flex-wrap gap-4 justify-center mb-6">
+      <button id="add-color" class="bg-green-600 text-white px-5 py-2 rounded hover:bg-green-700">Add Color</button>
+      <button id="generate-matrix" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Generate Matrix</button>
+    </div>
+
+    <!-- Matrix Output -->
     <div id="matrix" class="mt-8 overflow-x-auto"></div>
 
-    <!-- Shareable link -->
-    <div class="mt-6 p-4 bg-white rounded shadow">
+    <!-- Shareable Link -->
+    <div class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded">
       <strong>Shareable link:</strong>
       <a href="#" id="share-link" class="text-blue-600 break-all underline">(not generated yet)</a>
     </div>
   </div>
 
-  <!-- JS Entry point -->
   <script src="script.js"></script>
 </body>
 </html>
