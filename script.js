@@ -17,6 +17,14 @@ function createColorRow(name = '', hex = '#000000') {
   colorInput.value = hex;
   colorInput.className = 'w-10 h-10 border rounded';
 
+  const hexLabel = document.createElement('span');
+  hexLabel.className = 'text-sm text-gray-600';
+  hexLabel.textContent = hex.toUpperCase();
+
+  colorInput.addEventListener('input', () => {
+    hexLabel.textContent = colorInput.value.toUpperCase();
+  });
+
   const removeBtn = document.createElement('button');
   removeBtn.textContent = 'Remove';
   removeBtn.className = 'text-red-600 hover:underline';
@@ -28,6 +36,7 @@ function createColorRow(name = '', hex = '#000000') {
 
   wrapper.appendChild(nameInput);
   wrapper.appendChild(colorInput);
+  wrapper.appendChild(hexLabel);
   wrapper.appendChild(removeBtn);
   colorInputsContainer.appendChild(wrapper);
 
@@ -80,9 +89,9 @@ function contrast(hex1, hex2) {
 }
 
 function getRating(ratio) {
-  if (ratio >= 7) return 'passAAA';
-  if (ratio >= 4.5) return 'passAA';
-  return 'fail';
+  if (ratio >= 7) return 'AAA';
+  if (ratio >= 4.5) return 'AA';
+  return 'Fail';
 }
 
 function buildMatrix(names, values) {
@@ -96,10 +105,24 @@ function buildMatrix(names, values) {
   emptyTh.className = 'p-2';
   headerRow.appendChild(emptyTh);
 
-  names.forEach(name => {
+  names.forEach((name, i) => {
     const th = document.createElement('th');
     th.className = 'p-2 border bg-gray-200';
-    th.textContent = name;
+
+    const label = document.createElement('div');
+    label.className = 'flex flex-col items-center gap-1';
+
+    const swatch = document.createElement('div');
+    swatch.className = 'w-4 h-4 rounded-full';
+    swatch.style.backgroundColor = values[i];
+
+    const text = document.createElement('div');
+    text.className = 'text-sm text-gray-800';
+    text.innerHTML = `<div>${name}</div><div class="text-xs text-gray-500">${values[i].toUpperCase()}</div>`;
+
+    label.appendChild(swatch);
+    label.appendChild(text);
+    th.appendChild(label);
     headerRow.appendChild(th);
   });
 
@@ -110,21 +133,56 @@ function buildMatrix(names, values) {
 
   values.forEach((bgValue, rowIdx) => {
     const tr = document.createElement('tr');
+
     const rowHeader = document.createElement('th');
     rowHeader.className = 'p-2 border bg-gray-200';
-    rowHeader.textContent = names[rowIdx];
+
+    const label = document.createElement('div');
+    label.className = 'flex flex-col items-start gap-1';
+
+    const swatch = document.createElement('div');
+    swatch.className = 'w-4 h-4 rounded-full';
+    swatch.style.backgroundColor = bgValue;
+
+    const text = document.createElement('div');
+    text.className = 'text-sm text-gray-800';
+    text.innerHTML = `<div>${names[rowIdx]}</div><div class="text-xs text-gray-500">${bgValue.toUpperCase()}</div>`;
+
+    label.appendChild(swatch);
+    label.appendChild(text);
+    rowHeader.appendChild(label);
     tr.appendChild(rowHeader);
 
     values.forEach((textValue, colIdx) => {
-      const td = document.createElement('td');
-      td.className = 'p-2 border text-center text-sm text-white';
-      td.style.backgroundColor = bgValue;
-      td.style.color = textValue;
-
       const ratio = contrast(bgValue, textValue);
-      td.textContent = ratio.toFixed(2);
-      td.classList.add(getRating(ratio));
+      const rating = getRating(ratio);
 
+      const td = document.createElement('td');
+      td.className = 'p-2 border text-sm';
+
+      const cell = document.createElement('div');
+      cell.className = 'flex items-center gap-2';
+
+const colorBox = document.createElement('div');
+colorBox.className = 'w-10 h-10 rounded flex items-center justify-center text-sm font-semibold';
+colorBox.style.backgroundColor = bgValue;
+colorBox.style.color = textValue;
+colorBox.textContent = 'C';
+
+
+      const label = document.createElement('div');
+      label.className = 'text-gray-800';
+      label.innerHTML = `${ratio.toFixed(2)}<br><strong>${rating}</strong>`;
+
+      if (bgValue.toLowerCase() === textValue.toLowerCase()) {
+        cell.style.opacity = '0';
+      } else if (rating === 'Fail') {
+        cell.style.opacity = '0.3';
+      }
+
+      cell.appendChild(colorBox);
+      cell.appendChild(label);
+      td.appendChild(cell);
       tr.appendChild(td);
     });
 
