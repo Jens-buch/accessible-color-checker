@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Accessible Color Checker</title>
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 </head>
 <body class="bg-gray-100 text-gray-900 p-6">
@@ -13,20 +13,25 @@
     <h1 class="text-3xl font-bold mb-6">Accessible Color Matrix</h1>
 
     <!-- Palette name -->
-    <input id="palette-name" type="text" placeholder="Palette name (optional)"
-      class="border px-3 py-2 rounded w-full max-w-md mb-6" />
+    <input
+      id="palette-name"
+      type="text"
+      placeholder="Palette name (optional)"
+      class="border px-3 py-2 rounded w-full max-w-md mb-6"
+    />
 
-    <!-- Color inputs rendered via JS -->
+    <!-- Color input rows -->
     <div id="color-inputs" class="space-y-4 mb-6"></div>
 
-    <!-- Buttons -->
+    <!-- Action buttons -->
     <div class="flex gap-4 mb-6">
       <button id="add-color" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
         Add Color
       </button>
-      <button onclick="generateMatrix()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Generate Matrix
-      </button>
+<button id="generate-matrix" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+  Generate Matrix
+</button>
+
     </div>
 
     <!-- Contrast matrix -->
@@ -39,6 +44,7 @@
     </div>
   </div>
 
+  <!-- JS Entry point -->
   <script src="script.js"></script>
 </body>
 </html>

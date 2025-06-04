@@ -163,12 +163,11 @@ function buildMatrix(names, values) {
       const cell = document.createElement('div');
       cell.className = 'flex items-center gap-2';
 
-const colorBox = document.createElement('div');
-colorBox.className = 'w-10 h-10 rounded flex items-center justify-center text-sm font-semibold';
-colorBox.style.backgroundColor = bgValue;
-colorBox.style.color = textValue;
-colorBox.textContent = 'C';
-
+      const colorBox = document.createElement('div');
+      colorBox.className = 'w-10 h-10 rounded flex items-center justify-center text-sm font-semibold';
+      colorBox.style.backgroundColor = bgValue;
+      colorBox.style.color = textValue;
+      colorBox.textContent = 'C';
 
       const label = document.createElement('div');
       label.className = 'text-gray-800';
@@ -236,4 +235,5 @@ document.addEventListener('DOMContentLoaded', () => {
   const hasLoaded = loadFromURL();
   if (!hasLoaded) initDefaultColors();
   document.getElementById('add-color').addEventListener('click', () => createColorRow());
+  document.getElementById('generate-matrix').addEventListener('click', generateMatrix);
 });
