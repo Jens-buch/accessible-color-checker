@@ -4,219 +4,38 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Accessible Color Matrix</title>
-  <style>
-    :root {
-      --bg-light: #f9f9fb;
-      --glass-light: rgba(255, 255, 255, 0.8);
-      --glass-border: rgba(0, 0, 0, 0.1);
-      --accent: #7f5af0;
-      --primary: #7f5af0;
-      --secondary: #dddddd;
-      --danger: #ff5c57;
-      --text-primary: #1e1e2f;
-      --text-muted: #666;
-      --input-bg: rgba(255, 255, 255, 0.9);
-      --input-border: rgba(0, 0, 0, 0.15);
-      --glow: 0 0 10px rgba(127, 90, 240, 0.2);
-    }
 
-    body {
-      background-color: var(--bg-light);
-      color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 2rem;
-      display: flex;
-      justify-content: center;
-    }
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
 
-    .container {
-      width: 100%;
-      max-width: 1200px;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 2rem;
-      font-family: 'Satoshi', sans-serif;
-    }
-
-    #palette-name {
-      display: block;
-      margin: 0 auto 2rem;
-      padding: 1rem 1.5rem;
-      font-size: 1.2rem;
-      background: var(--input-bg);
-      color: var(--text-primary);
-      border: 1px solid var(--input-border);
-      border-radius: 1rem;
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
-      outline: none;
-    }
-
-    #palette-name:focus {
-      box-shadow: var(--glow);
-      border-color: var(--accent);
-    }
-
-    .controls {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    button {
-      padding: 0.75rem 1.5rem;
-      margin: 0.5rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 2rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    #add-color {
-      background-color: var(--secondary);
-      color: var(--text-primary);
-    }
-
-    #add-color:hover {
-      background-color: #cfcfcf;
-    }
-
-    #generate-matrix {
-      background: linear-gradient(135deg, var(--primary), var(--danger));
-      color: white;
-      font-weight: bold;
-    }
-
-    #generate-matrix:hover {
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      transform: scale(1.05);
-    }
-
-    #color-inputs {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1.5rem;
-      justify-items: center;
-      margin-bottom: 3rem;
-    }
-
-    .color-card {
-      background: var(--glass-light);
-      border: 1px solid var(--glass-border);
-      border-radius: 1rem;
-      padding: 1rem;
-      width: 140px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      backdrop-filter: blur(6px);
-    }
-
-    .color-square {
-      width: 60px;
-      height: 60px;
-      border-radius: 0.75rem;
-      margin-bottom: 0.5rem;
-      border: 1px solid var(--glass-border);
-    }
-
-    .hex-input {
-      background: transparent;
-      border: none;
-      text-align: center;
-      font-size: 0.9rem;
-      color: var(--text-primary);
-      border-bottom: 1px solid var(--glass-border);
-      margin-bottom: 0.25rem;
-      width: 80px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      overflow: hidden;
-      border-radius: 1rem;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-    }
-
-    th, td {
-      padding: 1.25rem 1.5rem;
-      text-align: center;
-      border-bottom: 1px solid var(--glass-border);
-      vertical-align: middle;
-    }
-
-    th {
-      background: rgba(0, 0, 0, 0.02);
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--text-primary);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    td .cell-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 0.75rem;
-      border-radius: 0.75rem;
-      background-color: #fff;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
-
-    .cell-box span {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 0.3rem;
-    }
-
-    .shareable {
-      margin-top: 2rem;
-      padding: 1.5rem;
-      border: 1px solid var(--glass-border);
-      border-radius: 1rem;
-      background: var(--glass-light);
-    }
-
-    .shareable a {
-      color: var(--accent);
-      word-break: break-word;
-    }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Accessible Color Matrix</h1>
-    <input id="palette-name" type="text" placeholder="Enter palette name..." required />
+    <header>
+      <h1>Accessible Color Matrix</h1>
+      <input id="palette-name" type="text" placeholder="Enter palette name…" required />
+    </header>
 
-    <div id="color-inputs"></div>
+    <section id="color-inputs" class="color-inputs"></section>
 
-    <div class="controls">
+    <div class="button-row">
       <button id="add-color">Add Color</button>
       <button id="generate-matrix">Generate Matrix</button>
-      <button id="export-png" class="export-btn">Download Matrix as PNG</button>
+      <button id="export-png" style="display: none;">Export PNG</button>
     </div>
 
-    <div id="matrix"></div>
+    <main id="matrix"></main>
 
-    <div class="shareable">
+    <div class="share-link-container">
       <strong>Shareable link:</strong>
       <a href="#" id="share-link">(not generated yet)</a>
     </div>
   </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
