@@ -1,58 +1,63 @@
 const colorInputsContainer = document.getElementById('color-inputs');
-const colorRows = [];
 const paletteNameInput = document.getElementById('palette-name');
+const shareLink = document.getElementById('share-link');
 const exportBtn = document.getElementById('export-png');
 const matrixContainer = document.getElementById('matrix');
-const shareLink = document.getElementById('share-link');
 
-// Create a color input card
+const colorRows = [];
+
 function createColorRow(hex = '#000000') {
   const wrapper = document.createElement('div');
   wrapper.className = 'color-card';
 
-  const square = document.createElement('div');
-  square.className = 'color-square';
-  square.style.backgroundColor = hex;
+  const colorSquare = document.createElement('div');
+  colorSquare.className = 'color-square';
+  colorSquare.style.backgroundColor = hex;
 
   const hexInput = document.createElement('input');
   hexInput.type = 'text';
-  hexInput.value = hex.toUpperCase();
   hexInput.className = 'hex-input';
+  hexInput.value = hex.toUpperCase();
 
   hexInput.addEventListener('input', () => {
-    let val = hexInput.value.trim();
-    if (/^#?[0-9a-fA-F]{6}$/.test(val)) {
-      if (!val.startsWith('#')) val = '#' + val;
-      square.style.backgroundColor = val;
-    }
+    colorSquare.style.backgroundColor = hexInput.value;
   });
 
-  wrapper.appendChild(square);
-  wrapper.appendChild(hexInput);
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = 'Remove';
+  removeBtn.style.marginTop = '0.5rem';
+  removeBtn.onclick = () => {
+    wrapper.remove();
+    const index = colorRows.findIndex(r => r.hexInput === hexInput);
+    if (index !== -1) colorRows.splice(index, 1);
+  };
+
+  wrapper.append(colorSquare, hexInput, removeBtn);
   colorInputsContainer.appendChild(wrapper);
-
-  colorRows.push({ hexInput, square });
+  colorRows.push({ hexInput });
 }
 
-// Default colors
 function initDefaultColors() {
-  ['#FFFFFF', '#FEDC2A', '#5A3B5D', '#8B538F', '#C3A3C9'].forEach(hex => createColorRow(hex));
+  ['#FFFFFF', '#FEDC2A', '#5A3B5D', '#8B538F', '#C3A3C9'].forEach(c => createColorRow(c));
 }
 
-// Load palette from URL
 function loadFromURL() {
   const params = new URLSearchParams(window.location.search);
   const values = params.getAll('v');
   const title = params.get('title');
-  if (title) paletteNameInput.value = decodeURIComponent(title);
+
+  if (title && paletteNameInput) {
+    paletteNameInput.value = decodeURIComponent(title);
+  }
+
   if (values.length > 0) {
-    values.forEach(val => createColorRow('#' + val));
+    values.forEach(v => createColorRow(`#${v}`));
     return true;
   }
+
   return false;
 }
 
-// Contrast functions
 function luminance(hex) {
   const rgb = hex.replace('#', '').match(/.{2}/g).map(c => {
     let ch = parseInt(c, 16) / 255;
@@ -68,57 +73,57 @@ function contrast(hex1, hex2) {
 }
 
 function getRating(ratio) {
-  if (ratio >= 7) return 'passAAA';
-  if (ratio >= 4.5) return 'passAA';
-  return 'fail';
+  if (ratio >= 7) return 'AAA';
+  if (ratio >= 4.5) return 'AA';
+  return 'Fail';
 }
 
-// Create table
 function buildMatrix(values) {
   const table = document.createElement('table');
-
-  // Header
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
+
   const emptyTh = document.createElement('th');
   headerRow.appendChild(emptyTh);
 
-  values.forEach(hex => {
+  values.forEach(v => {
     const th = document.createElement('th');
-    th.innerHTML = `
-      <div class="color-square" style="margin: auto; background-color: ${hex};"></div>
-      <div class="hex-label">${hex.toUpperCase()}</div>`;
+    th.innerHTML = `<div class="color-square" style="background-color: ${v}"></div><div>${v}</div>`;
     headerRow.appendChild(th);
   });
+
   thead.appendChild(headerRow);
   table.appendChild(thead);
 
-  // Body
   const tbody = document.createElement('tbody');
-  values.forEach(bgHex => {
+  values.forEach((bg, i) => {
     const tr = document.createElement('tr');
-    const th = document.createElement('th');
-    th.innerHTML = `
-      <div class="color-square" style="margin: auto; background-color: ${bgHex};"></div>
-      <div class="hex-label">${bgHex.toUpperCase()}</div>`;
-    tr.appendChild(th);
 
-    values.forEach(textHex => {
-      const ratio = contrast(bgHex, textHex);
+    const rowHeader = document.createElement('th');
+    rowHeader.innerHTML = `<div class="color-square" style="background-color: ${bg}"></div><div>${bg}</div>`;
+    tr.appendChild(rowHeader);
+
+    values.forEach((fg, j) => {
+      const td = document.createElement('td');
+      const ratio = contrast(bg, fg);
       const rating = getRating(ratio);
 
-const td = document.createElement('td');
-// Remove 'cell-box' from the <td>'s classes
-td.className = rating; 
-td.style.opacity = bgHex.toLowerCase() === textHex.toLowerCase() ? '0' : rating === 'fail' ? '0.3' : '1';
+      const cell = document.createElement('div');
+      cell.className = 'cell-box';
+      cell.style.opacity = (bg.toLowerCase() === fg.toLowerCase()) ? '0' : (rating === 'Fail' ? '0.3' : '1');
 
-// Add a wrapper <div> with the 'cell-box' class inside the <td>
-td.innerHTML = `
-  <div class="cell-box">
-    <div class="c-square" style="background-color: ${bgHex}; color: ${textHex};">C</div>
-    <span>${ratio.toFixed(2)} ${rating.replace('pass', '')}</span>
-  </div>`;
-tr.appendChild(td);
+      const colorBox = document.createElement('div');
+      colorBox.className = 'c-square';
+      colorBox.style.backgroundColor = bg;
+      colorBox.style.color = fg;
+      colorBox.textContent = 'C';
+
+      const label = document.createElement('span');
+      label.innerHTML = `${ratio.toFixed(2)} • ${rating}`;
+
+      cell.append(colorBox, label);
+      td.appendChild(cell);
+      tr.appendChild(td);
     });
 
     tbody.appendChild(tr);
@@ -128,7 +133,6 @@ tr.appendChild(td);
   return table;
 }
 
-// Link creation
 function createLink(values, title) {
   const params = new URLSearchParams();
   if (title) params.append('title', encodeURIComponent(title));
@@ -136,46 +140,39 @@ function createLink(values, title) {
   return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
 }
 
-// Main generation logic
 function generateMatrix() {
-  const values = [];
+  const values = colorRows.map(r => r.hexInput.value);
   const title = paletteNameInput.value.trim();
-  if (!title) return alert('Please enter a palette name.');
-
-  colorRows.forEach(row => {
-    const hex = row.hexInput.value;
-    if (/^#?[0-9a-fA-F]{6}$/.test(hex)) {
-      values.push(hex.startsWith('#') ? hex : '#' + hex);
-    }
-  });
-
   matrixContainer.innerHTML = '';
+
+  if (!title) {
+    alert('Please enter a palette name.');
+    return;
+  }
+
   const h2 = document.createElement('h2');
   h2.textContent = title;
   h2.style.textAlign = 'center';
-  h2.style.marginBottom = '1rem';
   matrixContainer.appendChild(h2);
-  matrixContainer.appendChild(buildMatrix(values));
 
+  matrixContainer.appendChild(buildMatrix(values));
   shareLink.href = createLink(values, title);
   shareLink.textContent = shareLink.href;
   exportBtn.style.display = 'inline-block';
 }
 
-// Export to PNG
-exportBtn.addEventListener('click', () => {
-  html2canvas(matrixContainer).then(canvas => {
-    const link = document.createElement('a');
-    link.download = 'color-matrix.png';
-    link.href = canvas.toDataURL();
-    link.click();
-  });
-});
-
-// DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   const loaded = loadFromURL();
   if (!loaded) initDefaultColors();
   document.getElementById('add-color').addEventListener('click', () => createColorRow());
   document.getElementById('generate-matrix').addEventListener('click', generateMatrix);
+
+  exportBtn.addEventListener('click', () => {
+    html2canvas(matrixContainer).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'color-matrix.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  });
 });
